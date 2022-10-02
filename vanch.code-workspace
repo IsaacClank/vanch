@@ -1,0 +1,28 @@
+{
+	"folders": [
+		{
+			"name": "vanch",
+			"path": "./",
+		},
+		{
+			"name": "vanch.api.passenger",
+			"path": "./api/passenger"
+		},
+	],
+	"settings": {
+		"thunder-client.saveToWorkspace": true,
+		"files.exclude": {
+			"**/.DS_Store": true,
+			"**/.git": true,
+			"**/.hg": true,
+			"**/.svn": true,
+			"**/CVS": true,
+			"**/Thumbs.db": true,
+			"**/dist": true,
+			".vscode": true,
+			"api/*": true,
+			"packages/*": true,
+			"thunder-tests": true,
+		}
+	},
+}

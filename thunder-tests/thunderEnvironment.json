@@ -1,0 +1,32 @@
+[
+  {
+    "_id": "9e8bc7b0-cbaf-4938-9a0b-c07ee1de767c",
+    "name": "(Global Env)",
+    "default": false,
+    "global": true,
+    "sortNum": -1,
+    "created": "2022-09-18T13:05:57.881Z",
+    "modified": "2022-10-02T15:25:54.898Z",
+    "data": [
+      {
+        "name": "host",
+        "value": "http://localhost"
+      },
+      {
+        "name": "port-people",
+        "value": "3001"
+      }
+    ]
+  },
+  {
+    "_id": "bb248d41-a13b-4f03-ab52-e04c743e6959",
+    "name": "(Local Env)",
+    "default": false,
+    "global": true,
+    "local": true,
+    "sortNum": -2,
+    "created": "2022-09-18T13:31:37.961Z",
+    "modified": "2022-09-18T13:31:37.961Z",
+    "data": []
+  }
+]

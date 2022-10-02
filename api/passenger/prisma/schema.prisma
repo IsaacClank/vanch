@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Passenger {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email    String @unique
+  phone    String @unique
+  age      Int
+  name     String
+  password String
+
+  trips Trip[]
+}
+
+model Trip {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  passengerId String?
+
+  Passenger   Passenger?       @relation(fields: [passengerId], references: [id])
+  requirement TripRequirement?
+  payment     TripPayment?
+}
+
+model TripRequirement {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  from         String // Coordinate string in format "longitude,latitude"
+  to           String // Coordinate string in format "longitude,latitude"
+  tripId       String @unique
+  tripTimingId String @unique
+
+  trip   Trip       @relation(fields: [tripId], references: [id])
+  timing TripTiming @relation(fields: [tripTimingId], references: [id])
+}
+
+model TripTiming {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  requestedTime   DateTime
+  TripRequirement TripRequirement?
+}
+
+model TripPayment {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  price  Float
+  tripId String @unique
+
+  trip Trip @relation(fields: [tripId], references: [id])
+}

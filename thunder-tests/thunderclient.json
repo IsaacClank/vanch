@@ -1,0 +1,120 @@
+[
+  {
+    "_id": "a3f1511b-62b9-4db3-81e8-320657b84906",
+    "colId": "849d24f5-2e67-494f-814f-ecae69ab8fec",
+    "containerId": "",
+    "name": "createPassenger",
+    "url": "{{host}}:{{port-people}}/passenger",
+    "method": "POST",
+    "sortNum": 10000,
+    "created": "2022-09-18T13:07:25.047Z",
+    "modified": "2022-09-30T14:27:49.202Z",
+    "headers": [
+      {
+        "name": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n  \"email\": \"{{#email}}\",\n  \"name\": \"{{#string}}\",\n  \"password\": \"{{#string}}\",\n  \"phone\": \"{{#number, 100000, 999999}}\",\n  \"age\": 23\n}",
+      "form": []
+    },
+    "tests": [
+      {
+        "type": "set-env-var",
+        "custom": "json.id",
+        "action": "setto",
+        "value": "{{createdUserId, local}}"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.id",
+        "action": "istype",
+        "value": "string"
+      },
+      {
+        "type": "res-code",
+        "custom": "",
+        "action": "equal",
+        "value": "200"
+      }
+    ]
+  },
+  {
+    "_id": "e8878459-70f8-4bb1-820d-4ff7542d50e4",
+    "colId": "849d24f5-2e67-494f-814f-ecae69ab8fec",
+    "containerId": "",
+    "name": "getUserById",
+    "url": "{{host}}:{{port-people}}/Passenger/{{createdUserId}}",
+    "method": "GET",
+    "sortNum": 20000,
+    "created": "2022-09-18T13:21:32.475Z",
+    "modified": "2022-09-18T14:10:44.251Z",
+    "headers": [],
+    "params": [],
+    "tests": [
+      {
+        "type": "json-query",
+        "custom": "json.id",
+        "action": "equal",
+        "value": "{{createdUserId}}"
+      },
+      {
+        "type": "res-code",
+        "custom": "",
+        "action": "equal",
+        "value": "200"
+      }
+    ]
+  },
+  {
+    "_id": "2f12d007-91f0-475e-9c48-2d319587e71a",
+    "colId": "849d24f5-2e67-494f-814f-ecae69ab8fec",
+    "containerId": "",
+    "name": "deletePassenger",
+    "url": "{{host}}:{{port-people}}/passenger/{{createdUserId}}",
+    "method": "DELETE",
+    "sortNum": 30000,
+    "created": "2022-10-01T13:11:02.021Z",
+    "modified": "2022-10-01T13:14:20.404Z",
+    "headers": [],
+    "params": [],
+    "tests": [
+      {
+        "type": "res-code",
+        "custom": "",
+        "action": "equal",
+        "value": "200"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.id",
+        "action": "equal",
+        "value": "{{createdUserId}}"
+      }
+    ]
+  },
+  {
+    "_id": "1956faa5-5beb-4ac3-9b5f-f853add44fc9",
+    "colId": "849d24f5-2e67-494f-814f-ecae69ab8fec",
+    "containerId": "",
+    "name": "getUserById -- expecting NotFound",
+    "url": "{{host}}:{{port-people}}/Passenger/{{createdUserId}}",
+    "method": "GET",
+    "sortNum": 40000,
+    "created": "2022-10-01T13:33:16.030Z",
+    "modified": "2022-10-01T13:33:49.235Z",
+    "headers": [],
+    "params": [],
+    "tests": [
+      {
+        "type": "res-code",
+        "custom": "",
+        "action": "equal",
+        "value": "404"
+      }
+    ]
+  }
+]

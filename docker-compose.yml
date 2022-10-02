@@ -1,0 +1,24 @@
+services:
+  db:
+    image: postgres
+    environment:
+      PGDATA: ${DB_PGDATA}
+      POSTGRES_PASSWORD: ${DB_POSTGRES_PASSWORD}
+      POSTGRES_USER: ${DB_POSTGRES_USER}
+    restart: always
+    ports:
+      - "${DB_HOST_PORT}:${DB_HOST_PORT}"
+    volumes:
+      - ${DB_HOST_VOLUME}:${DB_PGDATA}
+  api-passenger:
+    build:
+      context: ./
+      dockerfile: ./docker/api-passenger.Dockerfile
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=${API_PASSENGER_DATABASE_URL}
+      - NODE_ENV=${ENVIRONMENT}
+      - PORT=${API_PASSENGER_CONTAINER_PORT}
+    ports:
+      - "${API_PASSENGER_HOST_PORT}:${API_PASSENGER_CONTAINER_PORT}"

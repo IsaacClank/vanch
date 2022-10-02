@@ -1,0 +1,12 @@
+{
+  "name": "vanch",
+  "scripts": {
+    "build": "pnpm --stream -r build",
+    "clean": "rm -rf node_modules && pnpm --stream -r clean",
+    "loadenv": "dotenv -e .env",
+    "compose": "pnpm loadenv -- docker compose -f docker-compose.yml"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^6.0.0"
+  }
+}
