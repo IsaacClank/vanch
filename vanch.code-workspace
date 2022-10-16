@@ -4,10 +4,6 @@
 			"name": "vanch",
 			"path": "./",
 		},
-		{
-			"name": "vanch.api.passenger",
-			"path": "./api/passenger"
-		},
 	],
 	"settings": {
 		"thunder-client.saveToWorkspace": true,
@@ -18,11 +14,10 @@
 			"**/.svn": true,
 			"**/CVS": true,
 			"**/Thumbs.db": true,
-			"**/dist": true,
-			".vscode": true,
-			"api/*": true,
-			"packages/*": true,
-			"thunder-tests": true,
+		},
+		"search.exclude": {
+			"**/node_modules": true,
+			"**/dist": true
 		}
 	},
 }
