@@ -10,15 +10,18 @@ services:
       - "${DB_HOST_PORT}:${DB_HOST_PORT}"
     volumes:
       - ${DB_HOST_VOLUME}:${DB_PGDATA}
+
   api-passenger:
     build:
       context: ./
-      dockerfile: ./docker/api-passenger.Dockerfile
+      dockerfile: ./api/Dockerfile
+      args:
+        - name=passenger
     depends_on:
       - db
     environment:
-      - DATABASE_URL=${API_PASSENGER_DATABASE_URL}
       - NODE_ENV=${ENVIRONMENT}
+      - DATABASE_URL=${API_PASSENGER_DATABASE_URL}
       - PORT=${API_PASSENGER_CONTAINER_PORT}
     ports:
       - "${API_PASSENGER_HOST_PORT}:${API_PASSENGER_CONTAINER_PORT}"

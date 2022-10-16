@@ -1,12 +1,11 @@
 {
-  "name": "vanch-api-passenger",
+  "private": true,
   "scripts": {
     "postinstall": "pnpm db.generate",
     "build": "tsc",
     "clean": "rm -rf node_modules dist",
     "loadenv": "dotenv -e .env.development",
     "start.dev": "pnpm loadenv -- pnpm db.migrate.dev && nodemon -w ./src src/index.ts",
-    "start.deploy": "pnpm db.migrate.prod && node dist",
     "db.generate": "prisma generate",
     "db.migrate.dev": "pnpm loadenv -- prisma migrate dev",
     "db.migrate.prod": "prisma migrate deploy",
@@ -14,7 +13,9 @@
     "lint": "eslint ./src",
     "format": "prettier --write ./src",
     "test": "jest --watchAll",
-    "test.changes": "jest --watch"
+    "test.changes": "jest --watch",
+    "docker.build": "pnpm run db.generate && pnpm run build && pnpm prune --prod",
+    "docker.start": "pnpm db.migrate.prod && node ./dist"
   },
   "dependencies": {
     "@prisma/client": "^4.4.0",

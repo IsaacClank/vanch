@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist node_modules"
+  },
+  "dependencies": {
+    "typescript": "^4.8.4"
+  }
+}
