@@ -20,4 +20,19 @@
 			"**/dist": true
 		}
 	},
+	"extensions": {
+		"recommendations": [
+			"davidanson.vscode-markdownlint",
+			"prisma.prisma",
+			"dbaeumer.vscode-eslint",
+			"donjayamanne.githistory",
+			"mikestead.dotenv",
+			"ms-azuretools.vscode-docker",
+			"rangav.vscode-thunder-client",
+			"visualstudioexptteam.intellicode-api-usage-examples",
+			"visualstudioexptteam.vscodeintellicode",
+			"yzhang.markdown-all-in-one",
+		]
+	}
+
 }
