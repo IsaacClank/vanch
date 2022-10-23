@@ -40,18 +40,18 @@ flowchart TD
   subgraph es ["Event Store (ES)"]
     direction LR
   
-    esApi(Event API)
+    esApi(Event Worker)
     esBrokerer((Redis))
     esDb[(Event DB)]
     
-    esApi --sends commands--> esBrokerer
-    esApi --writes/reads--> esDb
+    esApi --writes--> esDb
+    esApi --subscribes--> esBrokerer
   end
   
   bsService ----reads---> saDb
-  bsService ----saga--> esApi
-  bsService ----subscribe--> esBrokerer
-  saWorker ----subscribe--> esBrokerer
+  bsService ----saga--> esBrokerer
+  bsService ----subscribes--> esBrokerer
+  saWorker ----subscribes--> esBrokerer
 ```
 
 ## 3. Development perspective
