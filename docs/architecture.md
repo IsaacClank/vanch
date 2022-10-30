@@ -41,7 +41,7 @@ flowchart TD
     direction LR
   
     esApi(Event Worker)
-    esBrokerer((Redis))
+    esBrokerer((Event Brokerer))
     esDb[(Event DB)]
     
     esApi --writes--> esDb
