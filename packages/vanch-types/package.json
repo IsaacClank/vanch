@@ -1,0 +1,11 @@
+{
+  "name": "vanch-types",
+  "version": "0.0.0",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist node_modules"
+  },
+  "dependencies": {
+    "typescript": "^4.8.4"
+  }
+}
