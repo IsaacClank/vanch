@@ -1,4 +1,5 @@
 {
+  "main": "dist",
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf dist node_modules"

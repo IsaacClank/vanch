@@ -1,13 +1,30 @@
 import { Messenger } from ".";
-import { adapterFactory } from "./factory";
+import { adapterFactory, AdapterInitOptions } from "./factory";
 import { RedisAdapter } from "./redis";
 
-describe("adapterFactory()", () => {
+jest.mock("./redis");
+
+const RedisAdapterMock = RedisAdapter as unknown as jest.Mock;
+
+describe("getAdapter()", () => {
+  beforeEach(() => {
+    RedisAdapterMock.mockClear();
+  });
+
   test("when encounter invalid Messenger variation, throw error", () => {
     expect(() => adapterFactory("" as any)).toThrow("Unexpected Messenger variation");
   });
 
   test("for Redis, returns correct adapter instance", () => {
-    expect(adapterFactory(Messenger.Redis)).toBeInstanceOf(RedisAdapter);
+    const expectedHost = "host";
+    const expectedPort = 0;
+
+    const mockInitOptions: AdapterInitOptions = {
+      host: expectedHost,
+      port: expectedPort,
+    };
+
+    expect(adapterFactory(Messenger.Redis, mockInitOptions)).toBeInstanceOf(RedisAdapter);
+    expect(RedisAdapterMock).toHaveBeenCalledWith(expectedHost, expectedPort);
   });
 });
