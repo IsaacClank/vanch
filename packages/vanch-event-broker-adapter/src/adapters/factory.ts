@@ -1,4 +1,4 @@
-import { IMessengerAdapter, Messenger } from ".";
+import { MessengerAdapter, Messenger } from ".";
 import { RedisAdapter } from "./redis";
 
 export interface AdapterInitOptions {
@@ -9,7 +9,7 @@ export interface AdapterInitOptions {
 /**
  * Factory function to create an appropriate adapter for a given messenger.
  */
-export function adapterFactory(messenger: Messenger, adapterInitOptions?: AdapterInitOptions): IMessengerAdapter {
+export function adapterFactory(messenger: Messenger, adapterInitOptions?: AdapterInitOptions): MessengerAdapter {
   let adapter;
 
   switch (messenger) {

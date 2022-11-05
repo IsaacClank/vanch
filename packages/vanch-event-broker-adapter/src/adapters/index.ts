@@ -1,15 +1,19 @@
 export * from "./factory";
 
 /**
- * Adapter interface to the underlying messenger.
- */
-export interface IMessengerAdapter {
-  publish(channel: string, message: unknown): Promise<void>;
-}
-
-/**
  * Supported Messenger technologies.
  */
 export enum Messenger {
   Redis,
 }
+
+/**
+ * Adapter interface to the underlying messenger.
+ */
+export interface MessengerAdapter {
+  publish(channel: string, message: unknown): Promise<void>;
+
+  subscribe(channel: string, listener: MessengerListener): Promise<void>;
+}
+
+export type MessengerListener = (message: unknown) => void;

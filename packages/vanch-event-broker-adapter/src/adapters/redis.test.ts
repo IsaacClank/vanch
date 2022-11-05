@@ -13,13 +13,15 @@ describe("RedisAdapter.constructor", () => {
   });
 });
 
+interface RedisInstanceMock {
+  publish: jest.Mock;
+  subscribe: jest.Mock;
+  on: jest.Mock;
+}
+
+const RedisMock: jest.Mock = Redis as unknown as jest.Mock;
+
 describe("RedisAdapter.publish()", () => {
-  interface RedisInstanceMock {
-    publish: jest.Mock;
-  }
-
-  const RedisMock: jest.Mock = Redis as unknown as jest.Mock;
-
   let adapter: RedisAdapter;
   let redisInstanceMock: RedisInstanceMock;
   let logSpy = jest.spyOn(console, "log");
@@ -66,5 +68,34 @@ describe("RedisAdapter.publish()", () => {
 
     expect(logSpy).toHaveBeenCalledTimes(2);
     expect(logSpy).toHaveBeenLastCalledWith(`Failed to publish message: ${expectedError}`);
+  });
+});
+
+describe("RedisAdapter.subscribe()", () => {
+  let adapter: RedisAdapter;
+  let redisInstanceMock: RedisInstanceMock;
+
+  beforeEach(() => {
+    RedisMock.mockClear();
+  });
+
+  beforeEach(() => {
+    adapter = new RedisAdapter();
+    redisInstanceMock = RedisMock.mock.instances[0];
+  });
+
+  test("attempts to subscribe to a given channel", () => {
+    const expectedChannel = "test";
+    const expectedListener = jest.fn();
+
+    redisInstanceMock.on.mockImplementation((_event: unknown, listener) => {
+      listener(expectedChannel);
+    });
+
+    adapter.subscribe(expectedChannel, expectedListener);
+
+    expect(redisInstanceMock.subscribe).toHaveBeenCalledWith(expectedChannel);
+    expect(redisInstanceMock.on).toHaveBeenCalled();
+    expect(expectedListener).toHaveBeenCalled();
   });
 });

@@ -1,4 +1,4 @@
-import { adapterFactory, IMessengerAdapter, Messenger } from "./adapters";
+import { adapterFactory, MessengerAdapter, Messenger } from "./adapters";
 
 /**
  * Singleton client for the Event Store Broker.
@@ -6,7 +6,7 @@ import { adapterFactory, IMessengerAdapter, Messenger } from "./adapters";
 export class Broker {
   private static _instance?: Broker;
 
-  private _adapter?: IMessengerAdapter;
+  private _adapter?: MessengerAdapter;
 
   private constructor() {
     this._adapter = adapterFactory(Messenger.Redis);
