@@ -11,6 +11,12 @@ services:
     volumes:
       - ${DB_HOST_VOLUME}:${DB_PGDATA}
 
+  event-store-broker:
+    image: redis:alpine
+    container_name: event-store-broker
+    ports:
+      - "${EVENT_STORE_BROKER_HOST_PORT}:${EVENT_STORE_BROKER_CONTAINER_PORT}"
+
   api-passenger:
     build:
       context: ./
