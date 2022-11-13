@@ -11,7 +11,7 @@ class BrokerAdapter {
    * Connect to the underlying messenger, initialize the client.
    */
   static init(host: string, port: number): void;
-  
+
   /**
    * Get the singleton instance.
    */

@@ -1,7 +1,16 @@
 import Redis from "ioredis";
 import { RedisAdapter } from "./redis";
 
+interface RedisInstanceMock {
+  publish: jest.Mock;
+  subscribe: jest.Mock;
+  on: jest.Mock;
+  quit: jest.Mock;
+}
+
 jest.mock("ioredis");
+
+const RedisMock: jest.Mock = Redis as unknown as jest.Mock;
 
 describe("RedisAdapter.constructor", () => {
   test("can be called without parameters", () => {
@@ -12,14 +21,6 @@ describe("RedisAdapter.constructor", () => {
     expect(new RedisAdapter("", 1)).toBeTruthy();
   });
 });
-
-interface RedisInstanceMock {
-  publish: jest.Mock;
-  subscribe: jest.Mock;
-  on: jest.Mock;
-}
-
-const RedisMock: jest.Mock = Redis as unknown as jest.Mock;
 
 describe("RedisAdapter.publish()", () => {
   let adapter: RedisAdapter;
@@ -40,20 +41,24 @@ describe("RedisAdapter.publish()", () => {
     const expectedChannel = "Channel";
     redisInstanceMock.publish.mockResolvedValue(1);
 
-    await adapter.publish(expectedChannel, "message");
+    await adapter.publish(expectedChannel, {});
 
     expect(redisInstanceMock.publish).toHaveBeenCalled();
     expect(logSpy).toHaveBeenCalledTimes(1);
-    expect(logSpy).toHaveBeenCalledWith(`Posting message to: ${expectedChannel}`);
+    expect(logSpy).toHaveBeenCalledWith(
+      `Posting message to: ${expectedChannel}`
+    );
   });
 
   test("when message has no receivers, log correctly", async () => {
     redisInstanceMock.publish.mockResolvedValue(0);
 
-    await adapter.publish("channel", "message");
+    await adapter.publish("channel", {});
 
     expect(logSpy).toHaveBeenCalledTimes(2);
-    expect(logSpy).toHaveBeenLastCalledWith("Message did not have any receiver");
+    expect(logSpy).toHaveBeenLastCalledWith(
+      "Message did not have any receiver"
+    );
   });
 
   test("when ecounter error, log and re-throw", async () => {
@@ -61,13 +66,15 @@ describe("RedisAdapter.publish()", () => {
     redisInstanceMock.publish.mockRejectedValue(expectedError);
 
     try {
-      await adapter.publish("channel", "message");
+      await adapter.publish("channel", {});
     } catch (actualError) {
       expect(actualError).toBe(expectedError);
     }
 
     expect(logSpy).toHaveBeenCalledTimes(2);
-    expect(logSpy).toHaveBeenLastCalledWith(`Failed to publish message: ${expectedError}`);
+    expect(logSpy).toHaveBeenLastCalledWith(
+      `Failed to publish message: ${expectedError}`
+    );
   });
 });
 
@@ -88,8 +95,14 @@ describe("RedisAdapter.subscribe()", () => {
     const expectedChannel = "test";
     const expectedListener = jest.fn();
 
-    redisInstanceMock.on.mockImplementation((_event: unknown, listener) => {
-      listener(expectedChannel);
+    redisInstanceMock.on.mockImplementation(() => {
+      const mockCallbackHandler = (channel: string, message: string) => {
+        if (channel === expectedChannel) {
+          expectedListener(JSON.parse(message));
+        }
+      };
+
+      mockCallbackHandler(expectedChannel, JSON.stringify({}));
     });
 
     adapter.subscribe(expectedChannel, expectedListener);
@@ -97,5 +110,34 @@ describe("RedisAdapter.subscribe()", () => {
     expect(redisInstanceMock.subscribe).toHaveBeenCalledWith(expectedChannel);
     expect(redisInstanceMock.on).toHaveBeenCalled();
     expect(expectedListener).toHaveBeenCalled();
+  });
+});
+
+describe("RedisAdapter.disconnect()", () => {
+  let adapter: RedisAdapter;
+  let redisInstanceMock: RedisInstanceMock;
+
+  beforeEach(() => {
+    RedisMock.mockClear();
+
+    adapter = new RedisAdapter();
+    redisInstanceMock = RedisMock.mock.instances[0];
+  });
+
+  test("should disconnect client", async () => {
+    adapter.disconnect().then(() => {
+      expect(redisInstanceMock.quit).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  test("when failing to disconnect client, throw error", () => {
+    redisInstanceMock.quit.mockImplementation((callback) => {
+      callback("Error message");
+    });
+
+    adapter.disconnect().catch((err) => {
+      expect(err).toBe("Error message");
+      expect(redisInstanceMock.quit).toHaveBeenCalledTimes(1);
+    });
   });
 });

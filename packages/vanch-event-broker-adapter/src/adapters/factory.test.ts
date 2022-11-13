@@ -12,19 +12,24 @@ describe("getAdapter()", () => {
   });
 
   test("when encounter invalid Messenger variation, throw error", () => {
-    expect(() => adapterFactory("" as any)).toThrow("Unexpected Messenger variation");
+    expect(() => adapterFactory("" as any)).toThrow(
+      "Unexpected Messenger variation"
+    );
   });
 
-  test("for Redis, returns correct adapter instance", () => {
-    const expectedHost = "host";
-    const expectedPort = 0;
+  test.each([undefined, { host: "string", port: 0 }])(
+    "for Redis, returns correct adapter instance",
+    (expectedInitOptions?: AdapterInitOptions) => {
+      const actualAdapter = adapterFactory(
+        Messenger.Redis,
+        expectedInitOptions
+      );
 
-    const mockInitOptions: AdapterInitOptions = {
-      host: expectedHost,
-      port: expectedPort,
-    };
-
-    expect(adapterFactory(Messenger.Redis, mockInitOptions)).toBeInstanceOf(RedisAdapter);
-    expect(RedisAdapterMock).toHaveBeenCalledWith(expectedHost, expectedPort);
-  });
+      expect(actualAdapter).toBeInstanceOf(RedisAdapter);
+      expect(RedisAdapterMock).toHaveBeenCalledWith(
+        expectedInitOptions?.host,
+        expectedInitOptions?.port
+      );
+    }
+  );
 });

@@ -8,12 +8,12 @@ export class Broker {
 
   private _adapter?: MessengerAdapter;
 
-  private constructor() {
-    this._adapter = adapterFactory(Messenger.Redis);
+  private constructor(host?: string, port?: number) {
+    this._adapter = adapterFactory(Messenger.Redis, { host, port });
   }
 
-  static init(host: string, port: number): void {
-    this._instance = new Broker();
+  static init(host?: string, port?: number): void {
+    this._instance = new Broker(host, port);
   }
 
   static get() {

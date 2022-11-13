@@ -2,7 +2,9 @@ import { Broker } from "./broker";
 
 describe("Broker.get()", () => {
   test("when uninitialized, throw error", () => {
-    expect(() => Broker.get()).toThrow("Broker cannot be used before initialization");
+    expect(() => Broker.get()).toThrow(
+      "Broker cannot be used before initialization"
+    );
   });
 
   test("when initialized, return the singleton instance", () => {

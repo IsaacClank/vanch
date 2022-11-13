@@ -11,11 +11,14 @@ export class RedisAdapter implements MessengerAdapter {
     this._redis = new Redis(port ?? DEFAUT_PORT, host ?? DEFAUT_HOST);
   }
 
-  async publish(channel: string, message: unknown): Promise<void> {
+  async publish(channel: string, message: object): Promise<void> {
     console.log(`Posting message to: ${channel}`);
 
     try {
-      const receiversCount = await this._redis.publish(channel, JSON.stringify(message));
+      const receiversCount = await this._redis.publish(
+        channel,
+        JSON.stringify(message)
+      );
 
       if (!receiversCount) {
         console.log(`Message did not have any receiver`);
@@ -27,12 +30,28 @@ export class RedisAdapter implements MessengerAdapter {
   }
 
   async subscribe(channel: string, listener: MessengerListener): Promise<void> {
-    this._redis.subscribe(channel);
-
-    this._redis.on("message", (unknownChannel, message) => {
+    const callListenerIfReceiveMessageFromChannel = (
+      unknownChannel: string,
+      message: string
+    ) => {
       if (unknownChannel === channel) {
-        listener(message);
+        listener(JSON.parse(message));
       }
+    };
+
+    this._redis.subscribe(channel);
+    this._redis.on("message", callListenerIfReceiveMessageFromChannel);
+  }
+
+  async disconnect(): Promise<void> {
+    console.log(this._redis.quit);
+
+    return new Promise((_, reject) => {
+      this._redis.quit((err) => {
+        if (err) {
+          return reject(err);
+        }
+      });
     });
   }
 }

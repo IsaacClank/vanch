@@ -9,12 +9,18 @@ export interface AdapterInitOptions {
 /**
  * Factory function to create an appropriate adapter for a given messenger.
  */
-export function adapterFactory(messenger: Messenger, adapterInitOptions?: AdapterInitOptions): MessengerAdapter {
+export function adapterFactory(
+  messenger: Messenger,
+  adapterInitOptions?: AdapterInitOptions
+): MessengerAdapter {
   let adapter;
 
   switch (messenger) {
     case Messenger.Redis:
-      adapter = new RedisAdapter(adapterInitOptions?.host, adapterInitOptions?.port);
+      adapter = new RedisAdapter(
+        adapterInitOptions?.host,
+        adapterInitOptions?.port
+      );
       break;
 
     default:
