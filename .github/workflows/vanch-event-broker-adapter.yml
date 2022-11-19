@@ -4,11 +4,11 @@ on:
   push:
     branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]'
+    branches: [ "main" ]
 
-defauts:
+defaults:
   run:
-    working-directory: ./packages/vanch-event-broker-adapter
+    working-directory: "./packages/vanch-event-broker-adapter"
 
 jobs:
   build:
