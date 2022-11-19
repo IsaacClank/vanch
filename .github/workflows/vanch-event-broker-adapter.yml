@@ -1,14 +1,12 @@
 name: vanch-event-broker-adapter
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+    paths: [ "./packages/vanch-event-broker-adapter" ]
 
 defaults:
   run:
-    shell: bash
     working-directory: ./packages/vanch-event-broker-adapter
 
 jobs:
