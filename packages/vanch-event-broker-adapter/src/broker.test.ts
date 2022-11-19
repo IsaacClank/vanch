@@ -15,18 +15,20 @@ describe("Broker", () => {
     );
   });
 
-  test("get(), when uninitialized, throw error", () => {
-    expect(() => BrokerAdapter.get()).toThrow(
-      "Broker cannot be used before initialization"
-    );
-  });
+  describe("Broker.get()", () => {
+    test("throws error when unintialized", () => {
+      expect(() => BrokerAdapter.get()).toThrow(
+        "Broker cannot be used before initialization"
+      );
+    });
 
-  test("get() when initialized, return the singleton instance", () => {
-    adapterFactoryMock.mockReturnValue({});
+    test("returns the messenger adapter instance", () => {
+      adapterFactoryMock.mockReturnValue({});
 
-    BrokerAdapter.init({ host: "host", port: 100 });
+      BrokerAdapter.init({ host: "host", port: 100 });
 
-    expect(adapterFactoryMock).toHaveBeenCalledTimes(1);
-    expect(BrokerAdapter.get()).toBeTruthy();
+      expect(adapterFactoryMock).toHaveBeenCalledTimes(1);
+      expect(BrokerAdapter.get()).toBeTruthy();
+    });
   });
 });

@@ -1,102 +1,88 @@
 import Redis from "ioredis";
 import { RedisAdapter } from "./redis";
 
-interface RedisInstanceMock {
-  publish: jest.Mock;
-  subscribe: jest.Mock;
-  on: jest.Mock;
-  quit: jest.Mock;
-  unsubscribe: jest.Mock;
-}
-
 jest.mock("ioredis");
 
-const RedisMock: jest.Mock = Redis as unknown as jest.Mock;
+describe("RedisAdapter", () => {
+  const RedisMock = Redis as unknown as jest.Mock;
 
-describe("RedisAdapter.constructor", () => {
-  test("can be called without parameters", () => {
-    expect(new RedisAdapter()).toBeTruthy();
-  });
-
-  test("can be called with host and port", () => {
-    expect(new RedisAdapter("", 1)).toBeTruthy();
-  });
-});
-
-describe("RedisAdapter.publish()", () => {
   let adapter: RedisAdapter;
-  let redisInstanceMock: RedisInstanceMock;
-  let logSpy = jest.spyOn(console, "log");
+
+  let redisInstance: {
+    publish: jest.Mock;
+    subscribe: jest.Mock;
+    on: jest.Mock;
+    quit: jest.Mock;
+    unsubscribe: jest.Mock;
+  };
+
+  test.each([
+    [undefined, undefined],
+    ["localhost", 1234],
+  ])("can be created", (host, port) => {
+    const expectedHost = host ?? "127.0.0.1";
+    const expectedPort = port ?? 6379;
+
+    expect(new RedisAdapter(host, port)).toBeTruthy();
+    expect(RedisMock).toHaveBeenCalledWith(expectedPort, expectedHost);
+  });
 
   beforeEach(() => {
     RedisMock.mockClear();
-    logSpy.mockClear();
-  });
 
-  beforeEach(() => {
     adapter = new RedisAdapter();
-    redisInstanceMock = RedisMock.mock.instances[0];
+    redisInstance = RedisMock.mock.instances[0];
   });
 
-  test("should call redis client corretly", async () => {
-    const expectedChannel = "Channel";
-    redisInstanceMock.publish.mockResolvedValue(1);
+  describe("RedisAdapter.publish()", () => {
+    let logSpy = jest.spyOn(console, "log");
 
-    await adapter.publish(expectedChannel, {});
+    test("a message to a channel", async () => {
+      redisInstance.publish.mockResolvedValue(1);
 
-    expect(redisInstanceMock.publish).toHaveBeenCalled();
-    expect(logSpy).toHaveBeenCalledTimes(1);
-    expect(logSpy).toHaveBeenCalledWith(
-      `Posting message to: ${expectedChannel}`
-    );
-  });
+      const expectedChannel = "Channel";
+      const expectedMessage = { name: "Isaac" };
 
-  test("when message has no receivers, log correctly", async () => {
-    redisInstanceMock.publish.mockResolvedValue(0);
+      await adapter.publish(expectedChannel, expectedMessage);
 
-    await adapter.publish("channel", {});
+      expect(redisInstance.publish).toHaveBeenCalledWith(
+        expectedChannel,
+        JSON.stringify(expectedMessage)
+      );
 
-    expect(logSpy).toHaveBeenCalledTimes(2);
-    expect(logSpy).toHaveBeenLastCalledWith(
-      "Message did not have any receiver"
-    );
-  });
+      expect(logSpy).toHaveBeenCalledWith(
+        `Posting message to: ${expectedChannel}`
+      );
+    });
 
-  test("when ecounter error, log and re-throw", async () => {
-    const expectedError = "Some error";
-    redisInstanceMock.publish.mockRejectedValue(expectedError);
-
-    try {
+    test("a message with no receiver", async () => {
+      redisInstance.publish.mockResolvedValue(0);
       await adapter.publish("channel", {});
-    } catch (actualError) {
-      expect(actualError).toBe(expectedError);
-    }
+      expect(logSpy).toHaveBeenLastCalledWith(
+        "Message did not have any receiver"
+      );
+    });
 
-    expect(logSpy).toHaveBeenCalledTimes(2);
-    expect(logSpy).toHaveBeenLastCalledWith(
-      `Failed to publish message: ${expectedError}`
-    );
-  });
-});
+    test("throws when failed to send message", async () => {
+      const expectedError = "Some error";
+      redisInstance.publish.mockRejectedValue(expectedError);
 
-describe("RedisAdapter.subscribe()", () => {
-  let adapter: RedisAdapter;
-  let redisInstanceMock: RedisInstanceMock;
-
-  beforeEach(() => {
-    RedisMock.mockClear();
-  });
-
-  beforeEach(() => {
-    adapter = new RedisAdapter();
-    redisInstanceMock = RedisMock.mock.instances[0];
+      try {
+        await adapter.publish("channel", {});
+      } catch (actualError) {
+        expect(actualError).toBe(expectedError);
+        expect(logSpy).toHaveBeenLastCalledWith(
+          `Failed to publish message: ${expectedError}`
+        );
+      }
+    });
   });
 
-  test("attempts to subscribe to a given channel", () => {
+  test("RedisAdapter.subscribe()", () => {
     const expectedChannel = "test";
     const expectedListener = jest.fn();
 
-    redisInstanceMock.on.mockImplementation(() => {
+    redisInstance.on.mockImplementation(() => {
       const mockCallbackHandler = (channel: string, message: string) => {
         if (channel === expectedChannel) {
           expectedListener(JSON.parse(message));
@@ -108,42 +94,18 @@ describe("RedisAdapter.subscribe()", () => {
 
     adapter.subscribe(expectedChannel, expectedListener);
 
-    expect(redisInstanceMock.subscribe).toHaveBeenCalledWith(expectedChannel);
-    expect(redisInstanceMock.on).toHaveBeenCalled();
+    expect(redisInstance.subscribe).toHaveBeenCalledWith(expectedChannel);
+    expect(redisInstance.on).toHaveBeenCalled();
     expect(expectedListener).toHaveBeenCalled();
   });
-});
 
-describe("RedisAdapter.unsubscribe()", () => {
-  let adapter: RedisAdapter;
-  let redisInstanceMock: RedisInstanceMock;
-
-  beforeEach(() => {
-    RedisMock.mockClear();
-
-    adapter = new RedisAdapter();
-    redisInstanceMock = RedisMock.mock.instances[0];
-  });
-
-  test("should calls client unsubscribing method", async () => {
+  test("RedisAdapter.unsubscribe()", async () => {
     await adapter.unsubscribe("some-channel");
-    expect(redisInstanceMock.unsubscribe).toHaveBeenCalledTimes(1);
-  });
-});
-
-describe("RedisAdapter.disconnect()", () => {
-  let adapter: RedisAdapter;
-  let redisInstanceMock: RedisInstanceMock;
-
-  beforeEach(() => {
-    RedisMock.mockClear();
-
-    adapter = new RedisAdapter();
-    redisInstanceMock = RedisMock.mock.instances[0];
+    expect(redisInstance.unsubscribe).toHaveBeenCalledTimes(1);
   });
 
-  test("should calls client disconnecting method", async () => {
+  test("RedisAdapter.disconnect()", async () => {
     await adapter.disconnect();
-    expect(redisInstanceMock.quit).toHaveBeenCalledTimes(1);
+    expect(redisInstance.quit).toHaveBeenCalledTimes(1);
   });
 });

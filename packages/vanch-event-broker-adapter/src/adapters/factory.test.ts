@@ -6,19 +6,19 @@ jest.mock("./redis");
 
 const RedisAdapterMock = RedisAdapter as unknown as jest.Mock;
 
-describe("getAdapter()", () => {
+describe("adapterFactory()", () => {
   beforeEach(() => {
     RedisAdapterMock.mockClear();
   });
 
-  test("when encounter invalid Messenger variation, throw error", () => {
+  test("throw invalid-messenger error", () => {
     expect(() => adapterFactory("" as any)).toThrow(
       "Unexpected Messenger variation"
     );
   });
 
   test.each([undefined, { host: "string", port: 0 }])(
-    "for Redis, returns correct adapter instance",
+    "returns Redis adapter instance",
     (expectedInitOptions?: AdapterInitOptions) => {
       const actualAdapter = adapterFactory(
         Messenger.Redis,
