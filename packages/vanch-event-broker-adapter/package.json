@@ -5,6 +5,7 @@
     "build": "tsc",
     "clean": "rm -rf dist node_modules",
     "test": "jest --watchAll --silent --verbose",
+    "test.ci": "jest --verbose",
     "test.changes": "jest --watch"
   },
   "dependencies": {
