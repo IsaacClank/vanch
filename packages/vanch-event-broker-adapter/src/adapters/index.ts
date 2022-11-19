@@ -14,6 +14,8 @@ export interface MessengerAdapter {
   publish(channel: string, message: unknown): Promise<void>;
 
   subscribe(channel: string, listener: MessengerListener): Promise<void>;
+  
+  unsubscribe(channel: string): Promise<void>;
 
   disconnect(): Promise<void>;
 }

@@ -1,24 +1,23 @@
-import { adapterFactory, MessengerAdapter, Messenger } from "./adapters";
+import { AdapterInitOptions, Messenger, MessengerAdapter } from ".";
+import { adapterFactory } from "./adapters";
 
 /**
- * Singleton client for the Event Store Broker.
+ * Singleton adapter for the Event Store Broker.
  */
-export class Broker {
-  private static _instance?: Broker;
+export class BrokerAdapter {
+  private static _messengerAdapter?: MessengerAdapter;
 
-  private _adapter?: MessengerAdapter;
-
-  private constructor(host?: string, port?: number) {
-    this._adapter = adapterFactory(Messenger.Redis, { host, port });
+  constructor() {
+    throw "Singleton cannot be instantiated";
   }
 
-  static init(host?: string, port?: number): void {
-    this._instance = new Broker(host, port);
+  static init(options: AdapterInitOptions): void {
+    this._messengerAdapter = adapterFactory(Messenger.Redis, options);
   }
 
-  static get() {
-    if (this._instance) {
-      return this._instance;
+  static get(): MessengerAdapter {
+    if (this._messengerAdapter) {
+      return this._messengerAdapter;
     }
 
     throw "Broker cannot be used before initialization";

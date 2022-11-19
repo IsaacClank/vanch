@@ -6,6 +6,7 @@ interface RedisInstanceMock {
   subscribe: jest.Mock;
   on: jest.Mock;
   quit: jest.Mock;
+  unsubscribe: jest.Mock;
 }
 
 jest.mock("ioredis");
@@ -113,6 +114,23 @@ describe("RedisAdapter.subscribe()", () => {
   });
 });
 
+describe("RedisAdapter.unsubscribe()", () => {
+  let adapter: RedisAdapter;
+  let redisInstanceMock: RedisInstanceMock;
+
+  beforeEach(() => {
+    RedisMock.mockClear();
+
+    adapter = new RedisAdapter();
+    redisInstanceMock = RedisMock.mock.instances[0];
+  });
+
+  test("should calls client unsubscribing method", async () => {
+    await adapter.unsubscribe("some-channel");
+    expect(redisInstanceMock.unsubscribe).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe("RedisAdapter.disconnect()", () => {
   let adapter: RedisAdapter;
   let redisInstanceMock: RedisInstanceMock;
@@ -124,20 +142,8 @@ describe("RedisAdapter.disconnect()", () => {
     redisInstanceMock = RedisMock.mock.instances[0];
   });
 
-  test("should disconnect client", async () => {
-    adapter.disconnect().then(() => {
-      expect(redisInstanceMock.quit).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  test("when failing to disconnect client, throw error", () => {
-    redisInstanceMock.quit.mockImplementation((callback) => {
-      callback("Error message");
-    });
-
-    adapter.disconnect().catch((err) => {
-      expect(err).toBe("Error message");
-      expect(redisInstanceMock.quit).toHaveBeenCalledTimes(1);
-    });
+  test("should calls client disconnecting method", async () => {
+    await adapter.disconnect();
+    expect(redisInstanceMock.quit).toHaveBeenCalledTimes(1);
   });
 });

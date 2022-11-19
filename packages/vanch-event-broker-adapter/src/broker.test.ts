@@ -1,14 +1,32 @@
-import { Broker } from "./broker";
+import { BrokerAdapter } from "./broker";
+import { adapterFactory } from "./adapters";
 
-describe("Broker.get()", () => {
-  test("when uninitialized, throw error", () => {
-    expect(() => Broker.get()).toThrow(
+jest.mock("./adapters", () => ({
+  ...jest.requireActual("./adapters"),
+  adapterFactory: jest.fn(),
+}));
+
+describe("Broker", () => {
+  let adapterFactoryMock = adapterFactory as jest.Mock;
+
+  test("cannot be constructed", () => {
+    expect(() => new BrokerAdapter()).toThrow(
+      "Singleton cannot be instantiated"
+    );
+  });
+
+  test("get(), when uninitialized, throw error", () => {
+    expect(() => BrokerAdapter.get()).toThrow(
       "Broker cannot be used before initialization"
     );
   });
 
-  test("when initialized, return the singleton instance", () => {
-    Broker.init("host", 0);
-    expect(Broker.get()).toBeTruthy();
+  test("get() when initialized, return the singleton instance", () => {
+    adapterFactoryMock.mockReturnValue({});
+
+    BrokerAdapter.init({ host: "host", port: 100 });
+
+    expect(adapterFactoryMock).toHaveBeenCalledTimes(1);
+    expect(BrokerAdapter.get()).toBeTruthy();
   });
 });

@@ -43,18 +43,11 @@ export class RedisAdapter implements MessengerAdapter {
     this._redis.on("message", callListenerIfReceiveMessageFromChannel);
   }
 
-  async disconnect(): Promise<void> {
-    console.log(this._redis.quit);
+  async unsubscribe(channel: string): Promise<void> {
+    await this._redis.unsubscribe(channel);
+  }
 
-    return new Promise((_, reject) => {
-      this._redis.quit((err) => {
-        if (err) {
-          return reject(err);
-        }
-      });
-    });
+  async disconnect(): Promise<void> {
+    await this._redis.quit();
   }
 }
-
-const adapter = new RedisAdapter();
-adapter.subscribe("test", console.log);
