@@ -1,12 +1,20 @@
 {
   "name": "vanch",
+  "packageManager": "^pnpm@7.4.12",
   "scripts": {
-    "build": "pnpm --stream -r build",
+    "lerna": "lerna",
+    "build": "pnpm install && pnpm --stream -r build",
     "clean": "rm -rf node_modules && pnpm --stream -r clean",
     "loadenv": "dotenv -e .env",
     "compose": "pnpm loadenv -- docker compose -f docker-compose.yml"
   },
   "devDependencies": {
-    "dotenv-cli": "^6.0.0"
-  }
+    "dotenv-cli": "^6.0.0",
+    "lerna": "^6.0.1",
+    "prettier": "^2.7.1",
+    "ts-node": "^10.9.1"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }
