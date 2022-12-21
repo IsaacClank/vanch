@@ -40,7 +40,7 @@ jobs:
         package-manager: pnpm
         working-directory: ./packages/vanch-event-broker-adapter
         output: report-markdown
-        skip-test: install
+        skip-step: install
 
     - name: Report code coverage
       uses: marocchino/sticky-pull-request-comment@v2
