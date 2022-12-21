@@ -35,14 +35,12 @@ jobs:
       run: pnpm install --frozen-lockfile
     
     - name: Unit tests
-      run: pnpm test.ci
-      
-    - name: Unit tests
       uses: ArtiomTr/jest-coverage-report-action@v2
       id: coverage
       with:
         package-manager: pnpm
         output: report-markdown
+        working-directory: ./packages/vanch-event-broker-adapter
 
     - name: Report code coverage
       uses: marocchino/sticky-pull-request-comment@v2
