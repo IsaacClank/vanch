@@ -1,6 +1,5 @@
 {
   "name": "vanch",
-  "packageManager": "^pnpm@7.4.12",
   "scripts": {
     "lerna": "lerna",
     "build": "pnpm install && pnpm --stream -r build",

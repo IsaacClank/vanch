@@ -79,24 +79,28 @@ describe("RedisAdapter", () => {
   });
 
   test("RedisAdapter.subscribe()", () => {
-    const expectedChannel = "test";
-    const expectedListener = jest.fn();
+    let mockRedisListeners: any[] = [];
 
-    redisInstance.on.mockImplementation(() => {
-      const mockCallbackHandler = (channel: string, message: string) => {
-        if (channel === expectedChannel) {
-          expectedListener(JSON.parse(message));
-        }
-      };
+    redisInstance.publish.mockImplementation(
+      (channel: string, message: string) => {
+        mockRedisListeners.forEach((l) => l(channel, message));
+      }
+    );
 
-      mockCallbackHandler(expectedChannel, JSON.stringify({}));
+    redisInstance.on.mockImplementation((_event: string, listener: any) => {
+      mockRedisListeners.push(listener);
     });
 
+    const expectedChannel = "test";
+    const expectedListener = jest.fn();
+    const expectedMessage = { name: "Isaac" };
+
     adapter.subscribe(expectedChannel, expectedListener);
+    redisInstance.publish(expectedChannel, JSON.stringify(expectedMessage));
 
     expect(redisInstance.subscribe).toHaveBeenCalledWith(expectedChannel);
     expect(redisInstance.on).toHaveBeenCalled();
-    expect(expectedListener).toHaveBeenCalled();
+    expect(expectedListener).toHaveBeenCalledWith(expectedMessage);
   });
 
   test("RedisAdapter.unsubscribe()", async () => {
