@@ -3,8 +3,6 @@ name: vanch-event-broker-adapter
 on:
   workflow_dispatch:
   pull_request:
-    paths:
-      - "./packages/vanch-event-broker-adapter"
 
 defaults:
   run:
