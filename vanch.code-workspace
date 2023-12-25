@@ -1,0 +1,47 @@
+{
+	"extensions": {
+		"recommendations": [
+			"donjayamanne.githistory",
+			"streetsidesoftware.code-spell-checker"
+		]
+	},
+	"folders": [
+		{
+			"path": ".",
+			"name": "vanch"
+		}
+	],
+	"settings": {
+		//
+		// # Extension settings
+		//
+		"cSpell.ignorePaths": [
+			"package-lock.json",
+			"node_modules",
+			"vscode-extension",
+			".git/objects",
+			".vscode",
+			".vscode-insiders",
+			"**/.config/Code/User/settings.json",
+			"*.code-workspace"
+		],
+		"cSpell.words": [
+			"Vanch"
+		],
+		//
+		// # Common settings
+		//
+		"editor.insertSpaces": true,
+		"editor.tabSize": 4,
+		"files.exclude": {
+			"**/.git": true,
+			"**/.svn": true,
+			"**/.hg": true,
+			"**/CVS": true,
+			"**/.DS_Store": true,
+			"**/Thumbs.db": true,
+			"*.code-workspace": true,
+			"*.gitignore": true
+		},
+	},
+}
