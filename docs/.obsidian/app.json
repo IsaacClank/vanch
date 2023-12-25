@@ -1,7 +1,10 @@
 {
-  "livePreview": false,
+  "livePreview": true,
   "vimMode": true,
   "readableLineLength": true,
   "showInlineTitle": false,
-  "strictLineBreaks": true
+  "strictLineBreaks": true,
+  "useMarkdownLinks": true,
+  "alwaysUpdateLinks": true,
+  "showUnsupportedFiles": false
 }
